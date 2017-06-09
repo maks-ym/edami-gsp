@@ -10,13 +10,6 @@
  * - output number of unique items and number of unique CIds
  */
 
-/* TODO:
- * - read
- * - dictionary wordsToNum
- * - output of dictionary to file
- * - dict numToWords
- */
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -95,7 +88,7 @@ int main()
     {
         cout << line_counter << ": " << line << endl;
         line = prune_line(line);
-        cout << line_counter++ << ": " <<  line << endl;    //DEGUB: show pruned line
+        cout << line_counter << ": " <<  line << endl;    //DEGUB: show pruned line
 
         std::istringstream iss(line);
         if(!iss) {
