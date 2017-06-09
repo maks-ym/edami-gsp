@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1496952005 source:/home/invictus/edami-gsp/src/preprocessing/main.cpp
+	<iostream>
+	<sstream>
+	<string>
+	<fstream>
+	<algorithm>
+	<map>
+	<unistd.h>
+
