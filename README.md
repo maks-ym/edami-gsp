@@ -1,17 +1,20 @@
 # edami-gsp
 
+Every subtask should have its separate branch and merging should be done only after approval of a pull-request
+
+-------------------
+
 ### Group
 EDAMI_P3. GSP
 (Start subject of the mail with that as well.)
 
 ### subtasks in the project
-Maksym: pre-processing, post-processing, calculation of sequence support
-Rahul: hash tree, creation of candidate sequences
-Ruben: hierarchies
+- Maksym: pre-processing, post-processing, calculation of sequence support
+- Rahul: hash tree, creation of candidate sequences
+- Ruben: hierarchies
 
 ### Report
 should contain:
-
 - description of your task;
 - assumptions you have made;
 - description of the form of input and output data;
