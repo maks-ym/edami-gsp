@@ -15,8 +15,6 @@
 #include <map>
 #include <unistd.h>     //UNIX sleep()
 
-#include <iostream>
-
 using namespace std;
 
 bool is_number(const std::string& s);

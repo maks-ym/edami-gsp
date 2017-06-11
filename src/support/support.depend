@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1497188446 source:/home/invictus/edami-gsp/src/support/main.cpp
+	<iostream>
+	<sstream>
+	<string>
+	<fstream>
+	<algorithm>
+	<map>
+	<set>
+	<unistd.h>
+	<typeinfo>
+
