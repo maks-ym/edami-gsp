@@ -99,7 +99,7 @@ int main()
                 cout << current_token << endl;
             }
             else {
-                word_sequence += num2word_dict[std::stoi(current_token)];
+                word_sequence += num2word_dict[std::stoi(current_token) - 1];
                 word_sequence += " ";
                 cout << current_token << endl;
             }
