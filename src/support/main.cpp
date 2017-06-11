@@ -43,12 +43,9 @@ int main() {
     std::string cur_gsp_line = "",
                 cur_cid_line = "",
                 cur_param_line  = "";
-    gsp::slong line_counter = 1,//TODO: is needed ?
-         last_cid = 0,      //TODO: is needed ?
-         reading_errors = 0,//TODO: is needed ?
-         winSize = 0,
-         minGap = 0,
-         maxGap = 0;
+    gsp::slong winSize = 0,
+               minGap = 0,
+               maxGap = 0;
 
 // initialize structures (dataset & sequences) =====================================================================
 
@@ -121,7 +118,7 @@ int main() {
         if(!iss) {
             cout << "[Error]: failed to create string stream from line." << endl;
             cout << "[Error]: in reading sequences" << endl;
-            sleep(1);
+//            sleep(1);
             return 1;
         }
         else {
@@ -160,7 +157,7 @@ int main() {
             else {
                 cout << "[read] the end of element. TOKEN = " << current_token << endl;
                 cout << " push element to the vector." << endl;
-                sleep(1);
+//                sleep(1);
                 current_gsp.push_back(cur_element);
                 cout << "Length of items of " << element_count << " element: " << cur_element.items.size() << endl;
                 cur_element.items.clear();
@@ -182,16 +179,13 @@ int main() {
                    cur_support = 0;
         std::set<gsp::slong> tidlist;
 
-//=====================
-/** std::map<gsp::slong, std::set<gsp::slong>> current_cid_data; */
-//=====================
 
         while(std::getline(infile, cur_cid_line)) {
             std::istringstream iss(cur_cid_line);
             if(!iss) {
                 cout << "[Error]: failed to create string stream from line." << endl;
                 cout << "[Error]: in reading dataset" << endl;
-                sleep(1);
+//                sleep(1);
                 return 1;
             }
             else {
@@ -202,11 +196,9 @@ int main() {
             cout << "cid: " << cid << " | last_cid: " << last_cid << endl;
             if(cid != last_cid) {
                 cout << "OTHER Cid! SUPPORT COUNTING ROUTING should be here" << endl;
-                bool is_in_cid = checkGSP(current_gsp, current_cid_data, winSize, minGap, maxGap);
-                if(is_in_cid) {
+                if( checkGSP(current_gsp, current_cid_data, winSize, minGap, maxGap) ) {
                     ++cur_support;
                 }
-
                 //clean and move to next Cid
                 current_cid_data.clear();
             }
@@ -235,7 +227,7 @@ int main() {
                 cout << endl;
             }
             cout << "==========================" << endl;
-            sleep(1);
+//            sleep(1);
             last_cid = cid;
             tidlist.clear();
         }
@@ -243,7 +235,7 @@ int main() {
 
         //write to file
         /** TODO: output GSP with its support */
-
+        outseqfile << cur_gsp_line << endl << "support - " << cur_support << endl;
         //clean current gsp structure
         current_gsp.clear();
     }
@@ -283,7 +275,7 @@ bool checkGSP(std::vector<gsp::gsp_element> &gsp, const std::map<gsp::slong,std:
               gsp::slong &winSize, gsp::slong &minGap, gsp::slong &maxGap) {
     /** SUPPORT COUNTING ROUTINE **/
     gsp::slong startTime = 0;
-    for(int i = 0; i < gsp.size(); ++i) {
+    for(unsigned i = 0; i < gsp.size(); ++i) {
         //forward faze
         if( !checkElement(gsp[i], cid_data, startTime) ) {
             return false;
@@ -305,17 +297,8 @@ bool checkGSP(std::vector<gsp::gsp_element> &gsp, const std::map<gsp::slong,std:
     return true;
 }
 
-
-
-// ===========================
-// struct gsp_element {
-//        std::map<slong,slong> items;
-//        slong start_time;
-//        slong end_time;
-//    };
-//===============================
 bool checkElement(gsp::gsp_element &element, const std::map<gsp::slong,std::set<gsp::slong>> &cid_data, gsp::slong startTime) {
-    coiut << "CHECK ELEMENT" << endl;
+    cout << "CHECK ELEMENT" << endl;
     for(std::map<gsp::slong,gsp::slong>::iterator item_iter = element.items.begin(); item_iter != element.items.end(); ++item_iter) {
         for(std::map<gsp::slong,std::set<gsp::slong>>::const_iterator cid_data_iter = cid_data.begin(); cid_data_iter != cid_data.end(); ++cid_data_iter) {
             if(cid_data_iter->first < startTime) {
