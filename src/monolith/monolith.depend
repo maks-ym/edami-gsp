@@ -1,0 +1,41 @@
+# depslib dependency file v1.0
+1497571026 source:d:\dropbox\study\pw\2sem--17l\edami\project\edami-gsp\src\monolith\main.cpp
+	<iostream>
+	"postprocessing.h"
+	"preprocessing.h"
+	"support.h"
+
+1497577287 d:\dropbox\study\pw\2sem--17l\edami\project\edami-gsp\src\monolith\postprocessing.h
+	<iostream>
+	<sstream>
+	<string>
+	<fstream>
+	<algorithm>
+	<map>
+	<windows.h>
+	<unistd.h>
+
+1497577312 d:\dropbox\study\pw\2sem--17l\edami\project\edami-gsp\src\monolith\preprocessing.h
+	<iostream>
+	<sstream>
+	<string>
+	<fstream>
+	<algorithm>
+	<map>
+	<windows.h>
+	<unistd.h>
+
+1497598612 d:\dropbox\study\pw\2sem--17l\edami\project\edami-gsp\src\monolith\support.h
+	<iostream>
+	<sstream>
+	<string>
+	<fstream>
+	<algorithm>
+	<climits>
+	<map>
+	<set>
+	<unistd.h>
+	<windows.h>
+	<typeinfo>
+	<time.h>
+

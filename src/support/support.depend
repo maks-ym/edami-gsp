@@ -10,3 +10,14 @@
 	<unistd.h>
 	<typeinfo>
 
+1497552711 source:d:\dropbox\study\pw\2sem--17l\edami\project\edami-gsp\src\support\main.cpp
+	<iostream>
+	<sstream>
+	<string>
+	<fstream>
+	<algorithm>
+	<map>
+	<set>
+	<unistd.h>
+	<typeinfo>
+

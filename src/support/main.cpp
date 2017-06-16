@@ -34,11 +34,15 @@ bool checkGSP(std::vector<gsp::gsp_element> &gsp, const std::map<gsp::slong,std:
               gsp::slong &winSize, gsp::slong &minGap, gsp::slong &maxGap);
 bool checkElement(gsp::gsp_element &element, const std::map<gsp::slong,std::set<gsp::slong>> &cid_data, gsp::slong startTime);
 
+template <typename T> T StringToNumber ( const string &Text );
+
 int main() {
-    std::string in_filename = "../../outputs/processed_tags.data",
-           in_params_filename = "../../outputs/params",
-           in_cand_seq_filename = "../../outputs/candidate_sequences",
-           out_cand_seq_filename = "../../outputs/num_cand_seq_with_sup";
+    std::string filename_base = "test";
+//    std::string in_filename = "../../outputs/processed_tags.data",
+    std::string in_filename = "../../outputs/test_processed.data",
+                in_params_filename = "../../outputs/test_params",
+                in_cand_seq_filename = "../../outputs/test_candidate_sequences",
+                out_cand_seq_filename = "../../outputs/" + filename_base + "_num_cand_seq_with_sup";
 
     std::string cur_gsp_line = "",
                 cur_cid_line = "",
@@ -96,7 +100,7 @@ int main() {
         std::string current_token = "";
         while(iss >> current_token) {
             if(is_number(current_token)) {
-                params[i] = std::stoi(current_token);
+                params[i] = StringToNumber<gsp::slong>(current_token);
                 cout << current_token << endl;
                 break;
             }
@@ -139,7 +143,7 @@ int main() {
 //            cout << " Type of gsp: " << typeid(current_gsp).name() << endl;
             if(is_number(current_token)) {
                 cout << "[read] item for element. TOKEN = " << current_token << endl;
-                cur_element.items.insert(std::make_pair(std::stoi(current_token), -1));
+                cur_element.items.insert(std::make_pair(StringToNumber<gsp::slong>(current_token), -1));
                 cout << "current element's items: ";
                 for (std::map<gsp::slong,gsp::slong>::iterator item_it = cur_element.items.begin(); item_it != cur_element.items.end(); ++item_it) {
                     cout << item_it->first << " ";
@@ -195,7 +199,7 @@ int main() {
             iss >> cid;
             cout << "cid: " << cid << " | last_cid: " << last_cid << endl;
             if(cid != last_cid) {
-                cout << "OTHER Cid! SUPPORT COUNTING ROUTING should be here" << endl;
+                cout << "OTHER Cid! SUPPORT COUNTING ROUTING" << endl;
                 if( checkGSP(current_gsp, current_cid_data, winSize, minGap, maxGap) ) {
                     ++cur_support;
                 }
@@ -207,7 +211,7 @@ int main() {
             current_token = "";
             while(iss >> current_token) {
                 cout << "current_token items: " << current_token << endl;
-                tidlist.insert((gsp::slong)std::stoi(current_token));
+                tidlist.insert(StringToNumber<gsp::slong>(current_token));
             }
             cout << "tidlist to insert:";
             for(set<gsp::slong>::const_iterator iter = tidlist.begin(); iter != tidlist.end(); ++iter) {
@@ -317,4 +321,12 @@ bool checkElement(gsp::gsp_element &element, const std::map<gsp::slong,std::set<
         }
     }
     return true;
+}
+
+template <typename T>
+T StringToNumber ( const string &Text )
+{
+    istringstream ss(Text);
+    T result;
+    return ss >> result ? result : 0;
 }
