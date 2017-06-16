@@ -20,7 +20,9 @@ int main()
     //support count
     support(filename);
     //postprocessing
-    postprocessing(filename, false);
+    postprocessing(filename);
 
+    system("pause");
     cout << "The result is here /outputs/" + filename + "_word_sequences.data" << endl;
+    cout << "The log file is here /outputs/SUPPORT_LOG" << endl;
 }

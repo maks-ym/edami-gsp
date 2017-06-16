@@ -35,21 +35,21 @@ bool checkGSP( std::vector<gsp::gsp_element> &gsp, const std::map<gsp::slong,std
               gsp::slong &winSize, gsp::slong &minGap, gsp::slong &maxGap, std::ofstream& logFile );
 bool checkElement( gsp::gsp_element &element, const std::map<gsp::slong,std::set<gsp::slong>> &cid_data,
                    gsp::slong startTime, gsp::slong &winSize, std::ofstream& logFile );
+bool is_number(const std::string& s);
 
 template <typename T> T StringToNumber ( const std::string &Text );
 
 void support( std::string filename_base, bool verbose = true )
 {
-    ofstream log( "../../outputs/SUPPORT_LOG", ios::app | ios::out );
+    ofstream log( ("../../outputs/SUPPORT_LOG_" + filename_base).c_str(), ios::app | ios::out );
     if( !log )
     {
-        cout << "[Error]: failed to open file ../../outputs/SUPPORT_LOG" << endl;
+        cout << "[Error]: failed to open file ../../outputs/SUPPORT_LOG_" + filename_base << endl;
         throw exception();
     }
 
-
     log << endl << "//////////////////////////////////////////////////////////////////////////////////////" << endl;
-    time_t _tm =time(NULL );
+    time_t _tm = time(NULL );
     struct tm * curtime = localtime ( &_tm );
     log << "date/time ------- " << asctime(curtime) << endl;
     log << "//////////////////////////////////////////////////////////////////////////////////////" << endl;
@@ -61,14 +61,16 @@ void support( std::string filename_base, bool verbose = true )
     std::string in_filename = "../../temp/" + filename_base + "_processed.data",
            in_params_filename = "../../temp/params",
            in_cand_seq_filename = "../../temp/" + filename_base + "_candidate_sequences",
-           out_cand_seq_filename = "../../temp/" + filename_base + "_num_cand_seq_with_sup";
+           out_cand_seq_filename = "../../temp/" + filename_base + "_num_cand_seq_with_sup",
+           out_freq_seq_filename = "../../temp/" + filename_base + "_num_freq_seq";
 
     std::string cur_gsp_line = "",
                 cur_cid_line = "",
                 cur_param_line  = "";
     gsp::slong winSize = 0,
                minGap = 0,
-               maxGap = 0;
+               maxGap = 0,
+               minSup = 0;
 
 /** ========================= initialize structures (dataset & sequences) =============================== **/
     std::vector<gsp::gsp_element> current_gsp;
@@ -106,8 +108,9 @@ void support( std::string filename_base, bool verbose = true )
 /** ============================ read parameters (winSize, minGap, maxGap) ============================== **/
     cout << "--- parameters ---" << endl;
     log << "--- parameters ---" << endl;
-    gsp::slong params[3] = { 0 };
-    for( int i = 0; i < 3; ++i )
+    unsigned num_of_params = 4;
+    gsp::slong params[num_of_params] = { 0 };
+    for( unsigned i = 0; i < num_of_params; ++i )
     {
         std::getline( inparamsfile, cur_param_line );
         std::istringstream iss( cur_param_line );
@@ -133,14 +136,17 @@ void support( std::string filename_base, bool verbose = true )
     winSize = params[0];
     minGap  = params[1];
     maxGap  = params[2];
+    minSup  = params[3];
     if( verbose )
     {
         cout << "winSize: " << winSize << endl;
         cout << "minGap:  " << minGap  << endl;
         cout << "maxGap:  " << maxGap  << endl;
+        cout << "minSup:  " << minSup<< endl;
         log << "winSize: " << winSize << endl;
         log << "minGap:  " << minGap  << endl;
         log << "maxGap:  " << maxGap  << endl;
+        log << "minSup:  " << minSup  << endl;
     }
 
 /** ======================== MAIN LOOP ( read & check support of GSP one-by-one ) ======================== */
@@ -421,18 +427,80 @@ void support( std::string filename_base, bool verbose = true )
     }
 
 
-    //close file streams
+
+
+/** ========================= check minSup and remove infrequent GSPs =============================== **/
+    cout << "=== Removing infrequent GSPs===" << endl;
+    // frequent sequences
+    ofstream outfreqseqfile( out_freq_seq_filename.c_str(), ios::trunc | ios::out );
+    if( !outfreqseqfile )
+    {
+        cout << "[Error]: failed to open file " + out_freq_seq_filename << endl;
+        log << "[Error]: failed to open file " + out_freq_seq_filename << endl;
+        throw exception();
+    }
+
+    // sequences with support output
+    ifstream inseqsupportfile( out_cand_seq_filename.c_str() );
+    if( !inseqsupportfile )
+    {
+        cout << "[Error]: failed to open file " + out_cand_seq_filename << endl;
+        log << "[Error]: failed to open file " + out_cand_seq_filename << endl;
+        throw exception();
+    }
+
+    std::string cur_support_line = "";
+    while( std::getline( inseqsupportfile, cur_gsp_line ) )
+    {
+        /** TODO: add fault tolerance */
+        if( !std::getline( inseqsupportfile, cur_support_line ) )
+        {
+            cout << "[Error] reading line with support" << endl;
+            continue;
+        }
+
+        cout << "GSP: " << cur_gsp_line << endl;
+        cout << "support: " << cur_support_line << endl;
+        Sleep( 500 );
+
+        std::istringstream iss_sup_line( cur_support_line  );
+        if( !iss_sup_line ) {
+            cout << "[Error]: failed to create string stream from line." << endl;
+            cout << "[Error]: in reading supports" << endl;
+            log << "[Error]: failed to create string stream from line." << endl;
+            log << "[Error]: in reading supports" << endl;
+            Sleep( 500 );
+            throw exception();
+        }
+        std::string cur_token = "";
+        while( iss_sup_line >> cur_token )
+        {
+            cout << "[token]: " << cur_token << endl;
+            if( is_number( cur_token )) {
+                    cout << "[minSup] token is number" << endl;
+//                    cout << "str2num: result - " << (unsigned long)StringToNumber<unsigned long>( cur_token ) << endl;
+//                    cout << "minSup: result - " << minSup << endl;
+//                if(( (unsigned long)StringToNumber<unsigned long>( cur_token ) > (unsigned long)minSup ) )
+                    if(( StringToNumber<gsp::slong>( cur_token ) > minSup ) )
+                {
+                    cout << "===[minSup] support is sufficient" << endl;
+                    outfreqseqfile << cur_gsp_line << endl;
+                    outfreqseqfile << "support - " + cur_token << endl;
+                    break;
+                }
+            }
+        }
+    }
+    cout << "[minSup] ENDED ====" << endl;
+     //close file streams
     inparamsfile.close();
     inseqfile.close();
     outseqfile.close();
     log.close();
-}
+    outfreqseqfile.close();
+    inseqsupportfile.close();
 
-//bool is_number(const std::string& s)
-//{
-//    return !s.empty() && std::find_if(s.begin(),
-//        s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
-//}
+}
 
 void show_gsp(const vector<gsp::gsp_element> &gsp, std::ofstream& logFile) {
     cout << "ITEMS: <";
@@ -453,11 +521,6 @@ void show_gsp(const vector<gsp::gsp_element> &gsp, std::ofstream& logFile) {
 }
 
 
-//    struct gsp_element {
-//        std::map<slong,slong> items;
-//        slong start_time;
-//        slong end_time;
-//    };
 
 
 bool checkGSP( std::vector<gsp::gsp_element> &gsp, const std::map<gsp::slong,std::set<gsp::slong>> &cid_data,

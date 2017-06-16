@@ -31,7 +31,7 @@ void preprocessing(std::string filename_base, bool verbose = true )
 {
     cout << "=============== PREPROCESSING ===============" << endl;
 /** ===================================== initialize vars =============================================== **/
-    std::string in_filename = "../../datasets/test.data",
+    std::string in_filename = "../../datasets/" + filename_base + ".data",
                 out_pruned_data_filename = "../../temp/pruned_" + filename_base + ".data",
                 out_processed_data_filename = "../../temp/" + filename_base + "_processed.data",
                 word2num_dict_filename = "../../temp/word2num.dict",
@@ -40,6 +40,7 @@ void preprocessing(std::string filename_base, bool verbose = true )
     unsigned line_counter = 1,
              unique_words_counter = 1,
              reading_errors = 0;
+    bool unknown_val_used = false;
 
 /** ==================================== initialize dictionary ========================================= **/
     std::map<std::string, int> word2num_dict;
@@ -110,10 +111,10 @@ void preprocessing(std::string filename_base, bool verbose = true )
             ++reading_errors;
             continue;
         }
+
         processed_line += NumberToString(cid) + " " + NumberToString(tid) + " " + NumberToString(num_of_items);
         if( verbose ) { cout << "[cid tid num] processed line : " << processed_line << endl; }
 
-        bool unknown_val_used = false;
         for( int i = 0; i < num_of_items; ++i )
         {
             //add word to dictionaries
