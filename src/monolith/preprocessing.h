@@ -23,19 +23,19 @@
 
 using namespace std;
 
-std::string prune_line(std::string line);
-void error_in_line_msg(int line_num);
+std::string prune_line( std::string line );
+void error_in_line_msg( int line_num );
 template <typename T> string NumberToString ( T Number );
 
-void preprocessing(std::string filename_base, bool verbose = true )
+void preprocessing( std::string filename )
 {
     cout << "=============== PREPROCESSING ===============" << endl;
 /** ===================================== initialize vars =============================================== **/
-    std::string in_filename = "../../datasets/" + filename_base + ".data",
-                out_pruned_data_filename = "../../temp/pruned_" + filename_base + ".data",
-                out_processed_data_filename = "../../temp/" + filename_base + "_processed.data",
-                word2num_dict_filename = "../../temp/word2num.dict",
-                num2word_dict_filename = "../../temp/num2word.dict",
+    std::string in_filename = "datasets/" + filename,
+                out_pruned_data_filename = "temp/" + filename + "_pruned.txt",
+                out_processed_data_filename = "temp/" + filename + "_processed.txt",
+                word2num_dict_filename = "temp/word2num.dict",
+                num2word_dict_filename = "temp/num2word.dict",
                 line;
     unsigned line_counter = 1,
              unique_words_counter = 1,
@@ -48,7 +48,7 @@ void preprocessing(std::string filename_base, bool verbose = true )
 
 /** =================================== open files (input & outputs) =================================== **/
     // dataset
-    ifstream infile(in_filename.c_str());
+    ifstream infile( in_filename.c_str() );
     if( !infile )
     {
         cout << "[Error]: failed to open file " + in_filename << endl;
@@ -60,7 +60,7 @@ void preprocessing(std::string filename_base, bool verbose = true )
     if( !outprunedfile )
     {
         cout << "[Error]: failed to open file " + out_pruned_data_filename << endl;
-        throw exception();
+        //throw exception();
     }
 
     // converted to numbers dataset
@@ -90,10 +90,10 @@ void preprocessing(std::string filename_base, bool verbose = true )
 /**========================================== read from file ========================================= **/
     while ( std::getline( infile, line ) )
     {
-        if( verbose ) { cout << "--- reading line ---" << endl; }
-        if( verbose ) { cout << line_counter << ": read:   " << line << endl; }
+        cout << "--- reading line ---" << endl;
+        cout << line_counter << ": read:   " << line << endl;
         line = prune_line( line );
-        if( verbose ) { cout << line_counter << ": pruned: " << line << endl; }   //DEGUB: show pruned line
+        cout << line_counter << ": pruned: " << line << endl;  //DEGUB: show pruned line
 
         std::istringstream iss( line );
         if( !iss ) {
@@ -104,7 +104,7 @@ void preprocessing(std::string filename_base, bool verbose = true )
         // add items to dictionary
         int cid = 0, tid = 0, num_of_items = 0;
         string processed_line = "";
-        if( verbose ) { cout << "[empty] processed line : " << processed_line << endl; }
+        cout << "[empty] processed line : " << processed_line << endl;
         if ( !( iss >> cid >> tid >> num_of_items ) )
         {
             error_in_line_msg(line_counter);
@@ -113,7 +113,7 @@ void preprocessing(std::string filename_base, bool verbose = true )
         }
 
         processed_line += NumberToString(cid) + " " + NumberToString(tid) + " " + NumberToString(num_of_items);
-        if( verbose ) { cout << "[cid tid num] processed line : " << processed_line << endl; }
+        cout << "[cid tid num] processed line : " << processed_line << endl;
 
         for( int i = 0; i < num_of_items; ++i )
         {
@@ -121,10 +121,9 @@ void preprocessing(std::string filename_base, bool verbose = true )
             string current_word = "";
             if( !( iss >> current_word ) )
             {
-                if( verbose ) {
-                    cout << "[Warning]: empty (unknown) word " << i+1 << " of " << num_of_items << endl;
-                    cout << "Using general value UNKNOWN..." << endl;
-                }
+                cout << "[Warning]: empty (unknown) word " << i+1 << " of " << num_of_items << endl;
+                cout << "Using general value UNKNOWN..." << endl;
+
                 Sleep( 500 );
 
                 if( !unknown_val_used ) {
@@ -158,17 +157,17 @@ void preprocessing(std::string filename_base, bool verbose = true )
                 processed_line += " " + NumberToString( it->second );
             }
         }
-        if( verbose ) { cout << "[complete] processed line : " << processed_line << endl; }
+        cout << "[complete] processed line : " << processed_line << endl;
 
         // output
         outprocessedfile << processed_line << endl;
         outprunedfile << line << endl;
         //increment counters
         ++line_counter;
-        if( verbose ) { cout << "--- ++++++++++++ ---" << endl; }
+        cout << "--- ++++++++++++ ---" << endl;
     }//while ended
 
-    if( verbose ) { cout << "Data preprocessed with " << reading_errors << " errors." << endl; }
+    cout << "Data preprocessed with " << reading_errors << " errors." << endl;
     Sleep( 2000 );
 
     // close all streams of files

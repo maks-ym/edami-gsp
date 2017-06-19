@@ -1,0 +1,36 @@
+<( a )> 
+support - 4 
+<( a b )> 
+support - 4 
+<( a b f )> 
+support - 4 
+<( a f )> 
+support - 4 
+<( b )> 
+support - 4 
+<( b )( a )> 
+support - 4 -- 2-- FIXED
+<( b f )> 
+support - 4 
+<( b f )( a )> 
+support - 4 -- 2-- FIXED
+<( d )> 
+support - 2 
+<( d )( a )> 
+support - 2 
+<( d )( b )( a )> 
+support - 2 
+<( d )( b )> 
+support - 2 
+<( d )( b f )> 
+support - 2 
+<( d )( b f )( a )> 
+support - 2 
+<( d )( f )> 
+support - 2 
+<( d )( f )( a )> 
+support - 0 ?? -- 2
+<( f )> 
+support - 4 
+<( f )( a )> 
+support - 4 -- 2 -- FIXED

@@ -23,15 +23,15 @@ using namespace std;
 bool is_number(const std::string& s);
 template <typename T> T StringToNumber ( const std::string &Text );
 
-void postprocessing( std::string filename_base, bool verbose = true )
+void postprocessing( std::string filename )
 {
     cout << "=============== POSTPROCESSING ===============" << endl;
 /** ===================================== initialize vars =============================================== **/
-    std::string num_sequences_filename = "../../temp/" + filename_base + "_num_cand_seq_with_sup",
-                word_sequences_filename = "../../outputs/" + filename_base + "_word_sequences.data",
-                num2word_dict_filename = "../../temp/num2word.dict",
-                in_freq_seq_filename = "../../temp/" + filename_base + "_num_freq_seq",
-                out_freq_seq_filename = "../../outputs/" + filename_base + "_word_freq_seq";
+    std::string num_sequences_filename = "temp/" + filename + "_num_cand_seq_with_sup.txt",
+                word_sequences_filename = "output/" + filename + "_word_sequences.txt",
+                num2word_dict_filename = "temp/num2word.dict",
+                in_freq_seq_filename = "temp/" + filename + "_num_freq_seq.txt",
+                out_freq_seq_filename = "output/" + filename + "_word_freq_seq.txt";
 
     string line, current_token;
     int line_counter = 1;
@@ -83,7 +83,7 @@ void postprocessing( std::string filename_base, bool verbose = true )
 
 /**========================================== read from file ========================================= **/
     //read dictionary
-    if( verbose ) { cout << "--- read dictionary ---" << endl; }
+    cout << "--- read dictionary ---" << endl;
     while( std::getline( dictfile, line ) ) {
         std::istringstream iss( line );
         if( !iss ) {
@@ -97,16 +97,17 @@ void postprocessing( std::string filename_base, bool verbose = true )
         /**NOTE: consider INDEX shift!!!*/
         num2word_dict.push_back( current_token );
     }// WHILE END reading dictionary
-    if( verbose ) { cout << "--- +++++++++++++++ ---" << endl; }
+    cout << "--- +++++++++++++++ ---" << endl;
 
+    cout << endl << "--- postrocess all sequences ---" << endl;
     //read sequences
     line = "";
     line_counter = 0;
     while ( std::getline( insequences, line ) )
     {
-        if( verbose ) { cout << "--- read sequence ---" << endl; }
-        bool support_line = false;
-        if( verbose ) { cout << line_counter << ": " << line << endl; }
+        cout << "--- read sequence ---" << endl;
+        //bool support_line = false;
+        cout << line_counter << ": " << line << endl;
         std::istringstream iss( line );
         if(!iss) {
             cout << "[Error]: failed to create string stream from line." << endl;
@@ -120,36 +121,39 @@ void postprocessing( std::string filename_base, bool verbose = true )
             if(is_number(current_token)) {
                 word_sequence += num2word_dict[StringToNumber<unsigned long>(current_token) - 1];
                 word_sequence += " ";
-                if( verbose ) { cout << current_token << endl; }
+                //cout << current_token << endl;
             }
-            else if( current_token == "support" ) {
-                word_sequence += current_token + " ";
-                while( iss >> current_token ) {
+            else if( current_token == "[" ) {
+                word_sequence += "\t" + current_token + " ";
+                while( iss >> current_token )
+                {
                     word_sequence += current_token + " ";
                 }
             }
             else {
                 word_sequence += current_token + " ";
-                if( verbose ) { cout << current_token << endl; }
+                //cout << current_token << endl;
             }
         }
 
         // output
-        if( verbose ) { cout << word_sequence << endl; }
+        cout << word_sequence << endl;
         outsequences << word_sequence << endl;
         //increment counters
-        line_counter = (support_line) ? line_counter : line_counter + 1;
-        if( verbose ) { cout << "--- +++++++++++++ ---" << endl; }
+//        line_counter = (support_line) ? line_counter : line_counter + 1;
+        line_counter = line_counter + 1;
+        cout << "--- +++++++++++++ ---" << endl;
     }// WHILE END converting numbers to words in sequences
 
+    cout << endl << "--- postrocess ONLY frequent sequences ---" << endl;
     // only frequent
     line = "";
     line_counter = 0;
     while ( std::getline( infreqseq, line ) )
     {
-        if( verbose ) { cout << "--- read sequence ---" << endl; }
+        cout << "--- read sequence ---" << endl;
         bool support_line = false;
-        if( verbose ) { cout << line_counter << ": " << line << endl; }
+        cout << line_counter << ": " << line << endl;
         std::istringstream iss( line );
         if(!iss) {
             cout << "[Error]: failed to create string stream from line." << endl;
@@ -163,26 +167,26 @@ void postprocessing( std::string filename_base, bool verbose = true )
             if(is_number(current_token)) {
                 word_sequence += num2word_dict[StringToNumber<unsigned long>(current_token) - 1];
                 word_sequence += " ";
-                if( verbose ) { cout << current_token << endl; }
+                //cout << current_token << endl;
             }
-            else if( current_token == "support" ) {
-                word_sequence += current_token + " ";
+            else if( current_token == "[" ) {
+                word_sequence += "\t" + current_token + " ";
                 while( iss >> current_token ) {
                     word_sequence += current_token + " ";
                 }
             }
             else {
                 word_sequence += current_token + " ";
-                if( verbose ) { cout << current_token << endl; }
+                //cout << current_token << endl;
             }
         }
 
         // output
-        if( verbose ) { cout << word_sequence << endl; }
+        cout << word_sequence << endl;
         outfreqseq << word_sequence << endl;
         //increment counters
         line_counter = (support_line) ? line_counter : line_counter + 1;
-        if( verbose ) { cout << "--- +++++++++++++ ---" << endl; }
+        cout << "--- +++++++++++++ ---" << endl;
     }
 
 //  close all streams of files

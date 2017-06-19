@@ -2,8 +2,8 @@
 1 15 3 a b c
 1 20 3 a b f
 1 25 4 a c d f
-2 15 3 a c b f
-2 20 1 a e
+2 15 3 a b f
+2 20 1 e
 3 10 3 a b f
 4 10 3 d g h
 4 20 2 b f
